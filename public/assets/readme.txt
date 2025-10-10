@@ -1,0 +1,1 @@
+Replace with your logo as logo.jpg

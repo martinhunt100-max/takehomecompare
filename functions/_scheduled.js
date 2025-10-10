@@ -1,0 +1,1 @@
+export default{async scheduled(ctrl,env,ctx){const now=new Date().toISOString();const kv=env.RATES_KV;const prev=await kv.get('rates.json');const base=prev?JSON.parse(prev):{version:'v0.4-prod',US:{}};base.updated=now;await kv.put('rates.json',JSON.stringify(base));}}
