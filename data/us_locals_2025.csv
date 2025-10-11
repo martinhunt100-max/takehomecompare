@@ -1,2 +1,0 @@
-state_code,state_name,locality_key,locality_name,type,rate,bracket_json,surcharge_on_state_tax,notes,locked,last_verified
-NY,New York,NYC,New York City,brackets,,"[{""from"":0,""to"":12000,""rate"":0.03078},{""from"":12000,""to"":25000,""rate"":0.03762},{""from"":25000,""to"":50000,""rate"":0.03819},{""from"":50000,""rate"":0.03876}]",,Resident PIT,TRUE,2025-01-01
