@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<link rel="icon" href="/favicon.ico">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Take Home Compare</title>
+<link href="https://fonts.googleapis.com/css2?family=Signika:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="180x180" href="/favicon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/favicon-512.png">
+
+<link rel="stylesheet" href="base.css">
+<script src="shared.js" defer></script>
+</head>
+<body>
+<header>
+  <div class="wrap header-inner">
+    <div></div>
+    <img class="logo" src="assets/logo.png" alt="Take Home Compare">
+    <div class="cta"><a href="advanced-v2.html" class="btn">Advanced Calculator →</a></div>
+  </div>
+</header>
+<div class="wrap" style="text-align:center;margin-top:6px;color:var(--muted)">
+  <div id="tagline">Compare your expected <strong>take‑home pay</strong> across states and countries in seconds.</div>
+</div>
+<main class="wrap">
+  <section class="card">
+    <div class="grid-2">
+      <div><label>Country</label>
+        <select id="country"><option value="US">United States</option><option value="UK">United Kingdom</option><option value="IE">Ireland</option></select>
+      </div>
+      <div><label>Gross annual salary</label><input id="gross" type="number" placeholder="e.g. 75000" value="75000"></div>
+    </div>
+    <div class="grid-2" style="margin-top:10px">
+      <div><label>US filing status / UK plan / IE USC</label>
+        <select id="option1">
+          <option value="single">US: Single</option>
+          <option value="married">US: Married</option>
+          <option value="plan2">UK: Student Loan Plan 2</option>
+          <option value="none">UK: No Student Loan</option>
+          <option value="ie-standard">IE: Standard USC</option>
+        </select>
+      </div>
+      <div><label>Pre-tax pension (%)</label><input id="pension" type="number" value="5"></div>
+    </div>
+    <div style="margin-top:10px"><button class="btn" id="calcBtn">Calculate</button></div>
+    <div class="kpis"><div class="chip">Net monthly: <b id="netMonthly">—</b></div><div class="chip">Effective tax: <b id="effRate">—</b></div></div>
+    <details class="accordion" id="breakdownAcc">
+      <summary>Tax breakdown (compact)</summary>
+      <div class="content"><canvas id="donut" height="220"></canvas></div>
+    </details>
+  </section>
+
+  <p style="text-align:center;margin:10px 0 0;font-size:16px;color:#006738" id="advancedLine">
+    Want detailed breakdowns, US states & city overlays, and saved scenarios? <a href="advanced-v2.html" style="color:#006738;font-weight:600">Click here</a> to open the <strong>Advanced</strong> page.
+  </p>
+
+  <section class="card" id="faq">
+    <h3>Frequently asked</h3>
+    <table class="table">
+      <tr><th>Does this include local taxes?</th><td>Yes—US locals are supported in the Advanced calculator and rolled into Free as presets.</td></tr>
+      <tr><th>How fresh are the parameters?</th><td>Rates are kept in KV and refreshed by a daily Cloudflare Cron.</td></tr>
+      <tr><th>Is this financial advice?</th><td>No—results are indicative only. Always verify with official sources.</td></tr>
+    </table>
+  </section>
+</main>
+<footer>© 2025 TakeHomeCompare.com • <span id="ver">v?</span> • <span id="upd">—</span></footer>
+<script>
+let RATES=null;
+(async()=>{
+  try{ const r=await fetch('/api/site-copy'); const j=await r.json(); if(j.tagline) document.getElementById('tagline').innerHTML=j.tagline.replace(/</g,'&lt;').replace(/>/g,'&gt;'); if(j.advanced_line_html) document.getElementById('advancedLine').innerHTML=j.advanced_line_html; }catch(e){}
+  RATES = await getRates();
+  const r = await fetch('/api/rates'); if(r.ok){ const j=await r.json(); document.getElementById('ver').textContent=j.version||'v?'; document.getElementById('upd').textContent=new Date(j.updated||Date.now()).toLocaleString(); }
+})();
+
+document.getElementById('calcBtn').addEventListener('click', async ()=>{
+  if(!RATES){ alert('Rates not loaded yet'); return; }
+  const country=document.getElementById('country').value;
+  const gross=Number(document.getElementById('gross').value||0);
+  const pensionPct=Number(document.getElementById('pension').value||0)/100;
+  const opt=document.getElementById('option1').value;
+  let base=gross*(1-pensionPct);
+  let net=base, breakdown={federal:0,state:0,local:0,fica:0};
+  if(country==='US'){
+    const filing=opt==='married'?'married':'single';
+    const table=RATES.US.federal.brackets[filing]||[];
+    breakdown.federal=computeBrackets(base,table);
+    breakdown.fica = Math.min(base,RATES.US.FICA.social_security_cap)*RATES.US.FICA.social_security_rate + base*RATES.US.FICA.medicare_rate;
+    net = base - breakdown.federal - breakdown.fica;
+  } else if(country==='UK'){ net = base*0.75; } else if(country==='IE'){ net=base*0.72; }
+  const monthly=net/12; const eff=1-(net/Math.max(1,gross));
+  document.getElementById('netMonthly').textContent = currency(monthly, country==='UK'?'GBP':country==='IE'?'EUR':'USD');
+  document.getElementById('effRate').textContent = Math.round(eff*100)+'%';
+  document.getElementById('breakdownAcc').open = true;
+  await loadChartJs();
+  new Chart(document.getElementById('donut'), { type:'doughnut', data: { labels:['Federal','State','Local','FICA'], datasets:[{ data:[breakdown.federal,breakdown.state,breakdown.local,breakdown.fica], borderWidth:0 }] }, options: { plugins: { legend: { display:false } }, cutout:'60%', responsive:true, maintainAspectRatio:false } });
+});
+</script>
+</body></html>

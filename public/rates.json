@@ -1,0 +1,18 @@
+{
+  "version": "v0.5-prod",
+  "updated": "2025-10-11 23:17 UTC",
+  "US": {
+    "federal": {
+      "brackets": {
+        "single": [],
+        "married": []
+      }
+    },
+    "FICA": {
+      "social_security_rate": 0.062,
+      "social_security_cap": 160200,
+      "medicare_rate": 0.0145
+    },
+    "states": {}
+  }
+}
