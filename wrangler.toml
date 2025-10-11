@@ -9,3 +9,6 @@ CANCEL_URL="https://takehomecompare.com/advanced-v2.html"
 binding="RATES_KV"
 id="REPLACE_WITH_PRODUCTION_KV_ID"
 preview_id="REPLACE_WITH_PREVIEW_KV_ID"
+
+[triggers]
+crons = ["0 6 * * 1-5"]
