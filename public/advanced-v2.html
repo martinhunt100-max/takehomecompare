@@ -60,10 +60,10 @@
 
   <footer>© 2025 TakeHomeCompare.com</footer>
 
-  <!-- shared helpers first -->
+  <!-- 1) Load shared helpers first -->
   <script src="/shared.js"></script>
 
-  <!-- (Optional) Chart.js on demand -->
+  <!-- 2) Then run page logic -->
   <script>
   let chartLoaded = false;
   async function ensureChartJs(){
@@ -71,9 +71,10 @@
   }
 
   window.addEventListener('DOMContentLoaded', async () => {
+    // Build ordered locations (US first, then states, UK, Europe, rest)
     const LOCS = await loadLocations();
-    buildLocationOptions(document.getElementById('loc1'), LOCS);
-    buildLocationOptions(document.getElementById('loc2'), LOCS);
+    buildLocationOptions(document.getElementById('loc1'), LOCS, 'USA');
+    buildLocationOptions(document.getElementById('loc2'), LOCS, 'GBR');
 
     document.getElementById('calc').addEventListener('click', async () => {
       await ensureChartJs();
@@ -87,6 +88,7 @@
     document.getElementById('copyA2B').addEventListener('click', () => {
       loc2.value = loc1.value; gross2.value = gross1.value;
     });
+
     document.getElementById('swap12').addEventListener('click', () => {
       const la=loc1.value, lb=loc2.value, ga=gross1.value, gb=gross2.value;
       loc1.value=lb; loc2.value=la; gross1.value=gb; gross2.value=ga;
