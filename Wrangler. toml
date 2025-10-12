@@ -1,0 +1,15 @@
+name = "takehomecompare"
+compatibility_date = "2024-11-21"
+pages_build_output_dir = "public"
+
+[triggers]
+crons = ["0 6 * * 1-5"]
+
+[[kv_namespaces]]
+binding    = "RATES_KV"
+id         = "REPLACE_WITH_PRODUCTION_KV_ID"
+preview_id = "REPLACE_WITH_PREVIEW_KV_ID"
+
+[vars]
+SUCCESS_URL = "https://takehomecompare.com/advanced-v2.html?pro=1"
+CANCEL_URL  = "https://takehomecompare.com/advanced-v2.html"
