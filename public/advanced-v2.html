@@ -1,0 +1,21 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Advanced — Take Home Compare</title>
+<link href="https://fonts.googleapis.com/css2?family=Signika:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="base.css"><script src="shared.js" defer></script></head>
+<body><header><div class="wrap header-inner"><div></div><img class="logo" src="assets/logo.png" alt="Take Home Compare"><div class="cta"><a class="btn" href="/">← Back</a></div></div></header>
+<main class="wrap"><section class="card">
+<div class="two-col">
+  <div><label>Location A</label><select id="loc1"></select><label>Gross</label><input id="gross1" type="number" value="90000"></div>
+  <div><label>Location B</label><select id="loc2"></select><label>Gross</label><input id="gross2" type="number" value="90000"></div>
+</div>
+<div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap"><button class="btn" id="calc">Calculate</button><button class="btn-ghost" id="copyA2B">Copy A → B</button><button class="btn-ghost" id="swap12">Swap A ↔ B</button></div>
+<details class="accordion"><summary>Comparison</summary><div class="content"><canvas id="bars" height="240"></canvas></div></details>
+</section></main><footer>© 2025 TakeHomeCompare.com</footer>
+<script>
+(async()=>{ const LOCS=await loadLocations(); buildLocationOptions(loc1,LOCS); buildLocationOptions(loc2,LOCS);
+await loadChartJs(); document.getElementById('calc').addEventListener('click',()=>{ new Chart(document.getElementById('bars'),{type:'bar',data:{labels:['A','B'],datasets:[{data:[100,93]}]},options:{plugins:{legend:{display:false}},responsive:true,maintainAspectRatio:false}}); });
+document.getElementById('copyA2B').addEventListener('click',()=>{ loc2.value=loc1.value; gross2.value=gross1.value; });
+document.getElementById('swap12').addEventListener('click',()=>{ const la=loc1.value, lb=loc2.value, ga=gross1.value, gb=gross2.value; loc1.value=lb; loc2.value=la; gross1.value=gb; gross2.value=ga; });
+})();
+</script></body></html>

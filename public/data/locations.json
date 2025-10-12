@@ -1,0 +1,364 @@
+[
+  {
+    "group": "OECD countries",
+    "items": [
+      {
+        "code": "AUS",
+        "label": "Australia"
+      },
+      {
+        "code": "AUT",
+        "label": "Austria"
+      },
+      {
+        "code": "BEL",
+        "label": "Belgium"
+      },
+      {
+        "code": "CAN",
+        "label": "Canada"
+      },
+      {
+        "code": "CHL",
+        "label": "Chile"
+      },
+      {
+        "code": "COL",
+        "label": "Colombia"
+      },
+      {
+        "code": "CRI",
+        "label": "Costa Rica"
+      },
+      {
+        "code": "CZE",
+        "label": "Czech Republic"
+      },
+      {
+        "code": "DNK",
+        "label": "Denmark"
+      },
+      {
+        "code": "EST",
+        "label": "Estonia"
+      },
+      {
+        "code": "FIN",
+        "label": "Finland"
+      },
+      {
+        "code": "FRA",
+        "label": "France"
+      },
+      {
+        "code": "DEU",
+        "label": "Germany"
+      },
+      {
+        "code": "GRC",
+        "label": "Greece"
+      },
+      {
+        "code": "HUN",
+        "label": "Hungary"
+      },
+      {
+        "code": "ISL",
+        "label": "Iceland"
+      },
+      {
+        "code": "IRL",
+        "label": "Ireland"
+      },
+      {
+        "code": "ISR",
+        "label": "Israel"
+      },
+      {
+        "code": "ITA",
+        "label": "Italy"
+      },
+      {
+        "code": "JPN",
+        "label": "Japan"
+      },
+      {
+        "code": "KOR",
+        "label": "Korea"
+      },
+      {
+        "code": "LVA",
+        "label": "Latvia"
+      },
+      {
+        "code": "LTU",
+        "label": "Lithuania"
+      },
+      {
+        "code": "LUX",
+        "label": "Luxembourg"
+      },
+      {
+        "code": "MEX",
+        "label": "Mexico"
+      },
+      {
+        "code": "NLD",
+        "label": "Netherlands"
+      },
+      {
+        "code": "NZL",
+        "label": "New Zealand"
+      },
+      {
+        "code": "NOR",
+        "label": "Norway"
+      },
+      {
+        "code": "POL",
+        "label": "Poland"
+      },
+      {
+        "code": "PRT",
+        "label": "Portugal"
+      },
+      {
+        "code": "SVK",
+        "label": "Slovak Republic"
+      },
+      {
+        "code": "SVN",
+        "label": "Slovenia"
+      },
+      {
+        "code": "ESP",
+        "label": "Spain"
+      },
+      {
+        "code": "SWE",
+        "label": "Sweden"
+      },
+      {
+        "code": "CHE",
+        "label": "Switzerland"
+      },
+      {
+        "code": "TUR",
+        "label": "T\u00fcrkiye"
+      },
+      {
+        "code": "GBR",
+        "label": "United Kingdom"
+      },
+      {
+        "code": "USA",
+        "label": "United States"
+      }
+    ]
+  },
+  {
+    "group": "United States \u2014 by state",
+    "items": [
+      {
+        "code": "US-AL",
+        "label": "US \u2014 Alabama (AL)"
+      },
+      {
+        "code": "US-AK",
+        "label": "US \u2014 Alaska (AK)"
+      },
+      {
+        "code": "US-AZ",
+        "label": "US \u2014 Arizona (AZ)"
+      },
+      {
+        "code": "US-AR",
+        "label": "US \u2014 Arkansas (AR)"
+      },
+      {
+        "code": "US-CA",
+        "label": "US \u2014 California (CA)"
+      },
+      {
+        "code": "US-CO",
+        "label": "US \u2014 Colorado (CO)"
+      },
+      {
+        "code": "US-CT",
+        "label": "US \u2014 Connecticut (CT)"
+      },
+      {
+        "code": "US-DE",
+        "label": "US \u2014 Delaware (DE)"
+      },
+      {
+        "code": "US-FL",
+        "label": "US \u2014 Florida (FL)"
+      },
+      {
+        "code": "US-GA",
+        "label": "US \u2014 Georgia (GA)"
+      },
+      {
+        "code": "US-HI",
+        "label": "US \u2014 Hawaii (HI)"
+      },
+      {
+        "code": "US-ID",
+        "label": "US \u2014 Idaho (ID)"
+      },
+      {
+        "code": "US-IL",
+        "label": "US \u2014 Illinois (IL)"
+      },
+      {
+        "code": "US-IN",
+        "label": "US \u2014 Indiana (IN)"
+      },
+      {
+        "code": "US-IA",
+        "label": "US \u2014 Iowa (IA)"
+      },
+      {
+        "code": "US-KS",
+        "label": "US \u2014 Kansas (KS)"
+      },
+      {
+        "code": "US-KY",
+        "label": "US \u2014 Kentucky (KY)"
+      },
+      {
+        "code": "US-LA",
+        "label": "US \u2014 Louisiana (LA)"
+      },
+      {
+        "code": "US-ME",
+        "label": "US \u2014 Maine (ME)"
+      },
+      {
+        "code": "US-MD",
+        "label": "US \u2014 Maryland (MD)"
+      },
+      {
+        "code": "US-MA",
+        "label": "US \u2014 Massachusetts (MA)"
+      },
+      {
+        "code": "US-MI",
+        "label": "US \u2014 Michigan (MI)"
+      },
+      {
+        "code": "US-MN",
+        "label": "US \u2014 Minnesota (MN)"
+      },
+      {
+        "code": "US-MS",
+        "label": "US \u2014 Mississippi (MS)"
+      },
+      {
+        "code": "US-MO",
+        "label": "US \u2014 Missouri (MO)"
+      },
+      {
+        "code": "US-MT",
+        "label": "US \u2014 Montana (MT)"
+      },
+      {
+        "code": "US-NE",
+        "label": "US \u2014 Nebraska (NE)"
+      },
+      {
+        "code": "US-NV",
+        "label": "US \u2014 Nevada (NV)"
+      },
+      {
+        "code": "US-NH",
+        "label": "US \u2014 New Hampshire (NH)"
+      },
+      {
+        "code": "US-NJ",
+        "label": "US \u2014 New Jersey (NJ)"
+      },
+      {
+        "code": "US-NM",
+        "label": "US \u2014 New Mexico (NM)"
+      },
+      {
+        "code": "US-NY",
+        "label": "US \u2014 New York (NY)"
+      },
+      {
+        "code": "US-NC",
+        "label": "US \u2014 North Carolina (NC)"
+      },
+      {
+        "code": "US-ND",
+        "label": "US \u2014 North Dakota (ND)"
+      },
+      {
+        "code": "US-OH",
+        "label": "US \u2014 Ohio (OH)"
+      },
+      {
+        "code": "US-OK",
+        "label": "US \u2014 Oklahoma (OK)"
+      },
+      {
+        "code": "US-OR",
+        "label": "US \u2014 Oregon (OR)"
+      },
+      {
+        "code": "US-PA",
+        "label": "US \u2014 Pennsylvania (PA)"
+      },
+      {
+        "code": "US-RI",
+        "label": "US \u2014 Rhode Island (RI)"
+      },
+      {
+        "code": "US-SC",
+        "label": "US \u2014 South Carolina (SC)"
+      },
+      {
+        "code": "US-SD",
+        "label": "US \u2014 South Dakota (SD)"
+      },
+      {
+        "code": "US-TN",
+        "label": "US \u2014 Tennessee (TN)"
+      },
+      {
+        "code": "US-TX",
+        "label": "US \u2014 Texas (TX)"
+      },
+      {
+        "code": "US-UT",
+        "label": "US \u2014 Utah (UT)"
+      },
+      {
+        "code": "US-VT",
+        "label": "US \u2014 Vermont (VT)"
+      },
+      {
+        "code": "US-VA",
+        "label": "US \u2014 Virginia (VA)"
+      },
+      {
+        "code": "US-WA",
+        "label": "US \u2014 Washington (WA)"
+      },
+      {
+        "code": "US-WV",
+        "label": "US \u2014 West Virginia (WV)"
+      },
+      {
+        "code": "US-WI",
+        "label": "US \u2014 Wisconsin (WI)"
+      },
+      {
+        "code": "US-WY",
+        "label": "US \u2014 Wyoming (WY)"
+      }
+    ]
+  }
+]
