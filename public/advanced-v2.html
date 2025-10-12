@@ -1,30 +1,97 @@
-<!DOCTYPE html><html lang="en"><head>
-  <link rel="icon" href="/assets/favicon.ico" sizes="any">
-<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
-<link rel="icon" type="image/png" href="/assets/icon-512.png" sizes="512x512">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Advanced — Take Home Compare</title>
 
-<meta property="og:title" content="Take Home Compare">
-<meta property="og:description" content="Compare your expected take-home pay across states and countries in seconds.">
-<meta property="og:image" content="/assets/og-image.png">
-<meta property="og:url" content="https://takehomecompare.com">
-<meta name="twitter:card" content="summary_large_image">
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Advanced — Take Home Compare</title>
-<link href="https://fonts.googleapis.com/css2?family=Signika:wght@300;400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="base.css"><script src="shared.js" defer></script></head>
-<body><header><div class="wrap header-inner"><div></div><img class="logo" src="assets/logo.png" alt="Take Home Compare"><div class="cta"><a class="btn" href="/">← Back</a></div></div></header>
-<main class="wrap"><section class="card">
-<div class="two-col">
-  <div><label>Location A</label><select id="loc1"></select><label>Gross</label><input id="gross1" type="number" value="90000"></div>
-  <div><label>Location B</label><select id="loc2"></select><label>Gross</label><input id="gross2" type="number" value="90000"></div>
-</div>
-<div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap"><button class="btn" id="calc">Calculate</button><button class="btn-ghost" id="copyA2B">Copy A → B</button><button class="btn-ghost" id="swap12">Swap A ↔ B</button></div>
-<details class="accordion"><summary>Comparison</summary><div class="content"><canvas id="bars" height="240"></canvas></div></details>
-</section></main><footer>© 2025 TakeHomeCompare.com</footer>
-<script>
-(async()=>{ const LOCS=await loadLocations(); buildLocationOptions(loc1,LOCS); buildLocationOptions(loc2,LOCS);
-await loadChartJs(); document.getElementById('calc').addEventListener('click',()=>{ new Chart(document.getElementById('bars'),{type:'bar',data:{labels:['A','B'],datasets:[{data:[100,93]}]},options:{plugins:{legend:{display:false}},responsive:true,maintainAspectRatio:false}}); });
-document.getElementById('copyA2B').addEventListener('click',()=>{ loc2.value=loc1.value; gross2.value=gross1.value; });
-document.getElementById('swap12').addEventListener('click',()=>{ const la=loc1.value, lb=loc2.value, ga=gross1.value, gb=gross2.value; loc1.value=lb; loc2.value=la; gross1.value=gb; gross2.value=ga; });
-})();
-</script></body></html>
+  <link href="https://fonts.googleapis.com/css2?family=Signika:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/base.css" />
+
+  <!-- Icons & social -->
+  <link rel="icon" href="/assets/favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
+  <link rel="icon" type="image/png" href="/assets/icon-512.png" sizes="512x512">
+  <meta property="og:title" content="Take Home Compare — Advanced">
+  <meta property="og:description" content="Side-by-side take-home pay comparison with advanced options.">
+  <meta property="og:image" content="/assets/og-image.png">
+  <meta property="og:url" content="https://takehomecompare.com/advanced-v2.html">
+  <meta name="twitter:card" content="summary_large_image">
+</head>
+<body>
+  <header>
+    <div class="wrap header-inner">
+      <div></div>
+      <img class="logo" src="/assets/logo.png" alt="Take Home Compare" />
+      <div class="cta"><a class="btn" href="/">← Back</a></div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="card">
+      <div class="two-col">
+        <div>
+          <label>Location A (Country / US state)</label>
+          <select id="loc1"></select>
+          <label class="mt8">Gross</label>
+          <input id="gross1" type="number" value="90000">
+        </div>
+        <div>
+          <label>Location B (Country / US state)</label>
+          <select id="loc2"></select>
+          <label class="mt8">Gross</label>
+          <input id="gross2" type="number" value="90000">
+        </div>
+      </div>
+      <div class="controls">
+        <button class="btn" id="calc">Calculate</button>
+        <button class="btn-ghost" id="copyA2B">Copy A → B</button>
+        <button class="btn-ghost" id="swap12">Swap A ↔ B</button>
+      </div>
+
+      <details class="accordion">
+        <summary>Comparison</summary>
+        <div class="content">
+          <canvas id="bars" height="240"></canvas>
+        </div>
+      </details>
+    </section>
+  </main>
+
+  <footer>© 2025 TakeHomeCompare.com</footer>
+
+  <!-- shared helpers first -->
+  <script src="/shared.js"></script>
+
+  <!-- (Optional) Chart.js on demand -->
+  <script>
+  let chartLoaded = false;
+  async function ensureChartJs(){
+    if (!chartLoaded) { await loadChartJs(); chartLoaded = true; }
+  }
+
+  window.addEventListener('DOMContentLoaded', async () => {
+    const LOCS = await loadLocations();
+    buildLocationOptions(document.getElementById('loc1'), LOCS);
+    buildLocationOptions(document.getElementById('loc2'), LOCS);
+
+    document.getElementById('calc').addEventListener('click', async () => {
+      await ensureChartJs();
+      new Chart(document.getElementById('bars'), {
+        type: 'bar',
+        data: { labels: ['A','B'], datasets: [{ data: [100, 93] }] },
+        options: { plugins: { legend: { display: false } }, responsive: true, maintainAspectRatio: false }
+      });
+    });
+
+    document.getElementById('copyA2B').addEventListener('click', () => {
+      loc2.value = loc1.value; gross2.value = gross1.value;
+    });
+    document.getElementById('swap12').addEventListener('click', () => {
+      const la=loc1.value, lb=loc2.value, ga=gross1.value, gb=gross2.value;
+      loc1.value=lb; loc2.value=la; gross1.value=gb; gross2.value=ga;
+    });
+  });
+  </script>
+</body>
+</html>
