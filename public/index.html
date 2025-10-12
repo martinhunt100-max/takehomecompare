@@ -134,5 +134,8 @@ document.getElementById('calc').addEventListener('click', recalc);
 document.getElementById('swap').addEventListener('click', ()=>{ const A = getInputs('A'); const B = getInputs('B'); setInputs('A', B); setInputs('B', A); recalc(); });
 document.getElementById('copyAB').addEventListener('click', ()=>{ const A = getInputs('A'); setInputs('B', A); recalc(); });
 document.getElementById('baselineB').addEventListener('click', ()=>{ const B = getInputs('B'); setInputs('A', B); recalc(); });
+<script src="/shared.js"></script>
+<script>
+  
 </script>
 </body></html>
