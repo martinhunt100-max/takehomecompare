@@ -27,7 +27,7 @@
       <div></div>
       <img class="logo" src="/assets/logo.png" alt="Take Home Compare" />
       <div class="cta">
-        <a class="btn" href="/advanced-v2.html">Advanced Calculator →</a>
+        <button class="btn" id="goPro">Advanced Calculator →</button>
       </div>
     </div>
   </header>
@@ -117,7 +117,7 @@
   <!-- Load shared helpers FIRST -->
   <script src="/shared.js"></script>
 
-  <!-- Then inline logic -->
+  <!-- Inline logic -->
   <script>
   let RATES = null;
 
@@ -188,16 +188,26 @@
     setValues('A', A); setValues('B', B); updateDiff(A,B);
   }
 
+  async function startCheckout(){
+    try{
+      const r = await fetch('/api/create-checkout-session', { method:'POST' });
+      if(!r.ok){ alert('Could not start checkout'); return; }
+      const j = await r.json();
+      if (j.url) { window.location = j.url; }
+      else { alert('No checkout URL returned'); }
+    }catch(e){ alert('Checkout failed'); }
+  }
+
   window.addEventListener('DOMContentLoaded', async () => {
     // Load rates + locations
     RATES = await getRates();
-    const LOCS = await loadLocations(); // from /data/locations.json with fallback
+    const LOCS = await loadLocations(); // ordered as requested
 
-    // Populate selects
+    // Populate selects, defaults (A=USA, B=GBR)
     const a = document.getElementById('locA');
     const b = document.getElementById('locB');
-    buildLocationOptions(a, LOCS);
-    buildLocationOptions(b, LOCS);
+    buildLocationOptions(a, LOCS, 'USA');
+    buildLocationOptions(b, LOCS, 'GBR');
 
     // Footer version
     try {
@@ -216,6 +226,7 @@
     document.getElementById('swap').addEventListener('click', ()=>{ const A = getInputs('A'); const B = getInputs('B'); setInputs('A', B); setInputs('B', A); recalc(); });
     document.getElementById('copyAB').addEventListener('click', ()=>{ const A = getInputs('A'); setInputs('B', A); recalc(); });
     document.getElementById('baselineB').addEventListener('click', ()=>{ const B = getInputs('B'); setInputs('A', B); recalc(); });
+    document.getElementById('goPro').addEventListener('click', startCheckout);
   });
   </script>
 </body>
