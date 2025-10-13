@@ -90,9 +90,16 @@
     // Ordered locations: US, states, UK, Europe, rest
     const LOCS = await loadLocations();
     const a = document.getElementById('locA');
-    const b = document.getElementById('locB');
-    buildLocationOptions(a, LOCS, 'USA');
-    buildLocationOptions(b, LOCS, 'GBR');
+const b = document.getElementById('locB');
+
+if (!a || !b) {
+  console.warn('Selects locA/locB not found in DOM.');
+  return; // stop init; HTML might not match IDs
+}
+
+buildLocationOptions(a, LOCS, 'USA');
+buildLocationOptions(b, LOCS, 'GBR');
+
 
     // Rates + footer version
     try {
