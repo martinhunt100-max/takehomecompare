@@ -127,11 +127,14 @@ async function loadLocations(){
 }
 
 function buildLocationOptions(sel, locations, defaultCode = 'USA'){
+  if (!sel) { console.warn('buildLocationOptions: select element not found'); return; }
+  if (!Array.isArray(locations)) { console.warn('buildLocationOptions: locations invalid'); return; }
+
   sel.innerHTML = '';
   for (const g of locations){
     const og = document.createElement('optgroup');
-    og.label = g.group;
-    for (const item of g.items){
+    og.label = g.group || '';
+    for (const item of (g.items || [])){
       const opt = document.createElement('option');
       opt.value = item.code;
       opt.textContent = item.label;
@@ -139,7 +142,7 @@ function buildLocationOptions(sel, locations, defaultCode = 'USA'){
     }
     sel.appendChild(og);
   }
-  // default selection
+
   if (defaultCode){
     const has = [...sel.querySelectorAll('option')].some(o => o.value === defaultCode);
     if (has) sel.value = defaultCode;
