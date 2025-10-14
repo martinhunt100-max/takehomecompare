@@ -1,3 +1,10 @@
+// /functions/api/auth/request-link.js
+export async function onRequestGet() {
+  return new Response(JSON.stringify({ alive: true, route: "/api/auth/request-link" }), {
+    headers: { "content-type": "application/json" }
+  });
+}
+
 // Passwordless login: create a magic-link token and (optionally) email it.
 // Robust version with diagnostics and clear JSON errors.
 
