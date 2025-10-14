@@ -13,7 +13,8 @@
     input { width:100%; padding:10px; border:1px solid #ccc; border-radius:8px; margin-top:6px; font-size:1rem }
     button { background:#007a3d; color:#fff; border:0; border-radius:10px; padding:10px 14px; font-weight:700; cursor:pointer; margin-top:12px }
     .muted{ color:#777; font-size:.95rem }
-    .msg{ margin-top:12px }
+    .msg{ margin-top:12px; white-space:pre-wrap }
+    a { color:#0a6 }
   </style>
 </head>
 <body>
@@ -39,7 +40,11 @@
     });
     const j = await r.json().catch(()=>({}));
     if (!r.ok) { msg.textContent = 'Error: ' + (j.error || 'failed'); return; }
-    msg.textContent = 'Check your email for the sign-in link.';
+    if (j.dev_link) {
+      msg.innerHTML = 'Dev mode: magic link created.<br><a href="'+j.dev_link+'">Click here to sign in</a>';
+    } else {
+      msg.textContent = 'Check your email for the sign-in link.';
+    }
   });
   </script>
 </body>
