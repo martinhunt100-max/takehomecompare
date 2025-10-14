@@ -1,72 +1,58 @@
 // Cloudflare Pages Function — Stripe Checkout (dependency-free, with diagnostics)
 
-export async function onRequestGet({ env }) {
-  // Diagnostics: visit /api/create-checkout-session?diag=1 in your browser
-  const url = new URL('http://x' + (typeof location === 'undefined' ? '' : location)); // ignore
-  // In Pages Functions, use the current request URL instead:
-  // (We can't access it here without context.request, so parse from env presence only.)
-  const hasSK  = !!env.STRIPE_SECRET_KEY;
-  const hasPID = !!env.PRICE_ID;
-  const ok = hasSK && hasPID;
-  return new Response(JSON.stringify({
-    ok,
-    STRIPE_SECRET_KEY_present: hasSK,
-    PRICE_ID_present: hasPID,
-    note: "POST to this endpoint to create a Checkout Session. Set env vars in Pages → Settings → Environment variables (Production)."
-  }), { headers: { "content-type": "application/json" }});
-}
+export async function onRequestPost({ request, env }) {
+  // Auth gate: require a session (so we can attach to a user)
+  const cookie = request.headers.get('Cookie') || '';
+  const m = /SESSION_JWT=([^;]+)/.exec(cookie);
+  if (!m) return json({ error: 'Not signed in' }, 401);
 
-export async function onRequestPost({ env }) {
-  const { STRIPE_SECRET_KEY, PRICE_ID, SUCCESS_URL, CANCEL_URL } = env;
+  const me = await verifyJWT(env.JWT_SECRET, m[1]).catch(()=>null);
+  if (!me) return json({ error: 'Invalid session' }, 401);
 
-  // Validate env vars clearly
-  if (!STRIPE_SECRET_KEY || !PRICE_ID) {
-    return new Response(JSON.stringify({
-      error: "Missing required environment variables",
-      details: {
-        STRIPE_SECRET_KEY_present: !!STRIPE_SECRET_KEY,
-        PRICE_ID_present: !!PRICE_ID,
-        how_to_fix: "In Cloudflare Pages → Your project → Settings → Environment variables (Production), add STRIPE_SECRET_KEY and PRICE_ID (recurring price, e.g., price_123). Optionally SUCCESS_URL and CANCEL_URL."
-      }
-    }), { status: 500, headers: { "content-type": "application/json" }});
+  const userKey = `user:${me.uid}`;
+  const user = await env.USERS_KV.get(userKey, 'json');
+  const successUrl = env.SUCCESS_URL || `${env.PUBLIC_BASE_URL || 'https://takehomecompare.com'}/advanced-v2.html`;
+  const cancelUrl  = env.CANCEL_URL  || `${env.PUBLIC_BASE_URL || 'https://takehomecompare.com'}/`;
+
+  const form = new URLSearchParams();
+  form.append('mode', 'subscription');
+  form.append('line_items[0][price]', env.STRIPE_PRICE_ID);
+  form.append('line_items[0][quantity]', '1');
+  form.append('allow_promotion_codes', 'true');
+  form.append('success_url', successUrl);
+  form.append('cancel_url', cancelUrl);
+
+  if (user?.stripe_customer_id) {
+    form.append('customer', user.stripe_customer_id);
+  } else {
+    // Ask Stripe to create + attach customer from email
+    form.append('customer_email', user?.email || me.email || '');
   }
 
-  try {
-    const form = new URLSearchParams();
-    form.append("mode", "subscription");
-    form.append("line_items[0][price]", PRICE_ID);
-    form.append("line_items[0][quantity]", "1");
-    form.append("allow_promotion_codes", "true");
-    form.append("success_url", SUCCESS_URL || "https://takehomecompare.com/advanced-v2.html?pro=1");
-    form.append("cancel_url",  CANCEL_URL  || "https://takehomecompare.com/");
+  const resp = await fetch('https://api.stripe.com/v1/checkout/sessions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${env.STRIPE_SECRET_KEY}`,
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: form.toString()
+  });
 
-    const resp = await fetch("https://api.stripe.com/v1/checkout/sessions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${STRIPE_SECRET_KEY}`,
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
-      body: form.toString()
-    });
+  const data = await resp.json().catch(()=>({}));
+  if (!resp.ok) return json({ error: data?.error?.message || 'Stripe error', status: resp.status }, 500);
 
-    const data = await resp.json().catch(() => ({}));
-
-    if (!resp.ok) {
-      // Surface Stripe’s error text so you know exactly what to fix
-      return new Response(JSON.stringify({
-        error: data?.error?.message || "Stripe API error",
-        status: resp.status,
-        hint: "Double-check PRICE_ID (must be a recurring price) and that your secret key can create Checkout Sessions."
-      }), { status: 500, headers: { "content-type": "application/json" }});
-    }
-
-    return new Response(JSON.stringify({ url: data.url }), {
-      headers: { "content-type": "application/json" }
-    });
-  } catch (err) {
-    return new Response(JSON.stringify({
-      error: "Function exception",
-      details: String(err)
-    }), { status: 500, headers: { "content-type": "application/json" }});
-  }
+  return json({ url: data.url });
 }
+
+async function verifyJWT(secret, token){
+  const [h,p,s] = token.split('.');
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey('raw', enc.encode(secret), {name:'HMAC', hash:'SHA-256'}, false, ['verify']);
+  const ok = await crypto.subtle.verify('HMAC', key, b64uToBytes(s), enc.encode(`${h}.${p}`));
+  if (!ok) return null;
+  const body = JSON.parse(new TextDecoder().decode(b64uToBytes(p)));
+  if (body.exp && Math.floor(Date.now()/1000) > body.exp) return null;
+  return body;
+}
+function b64uToBytes(b){ b=b.replace(/-/g,'+').replace(/_/g,'/'); while(b.length%4)b+='='; const bin=atob(b); const out=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) out[i]=bin.charCodeAt(i); return out; }
+function json(obj, status=200){ return new Response(JSON.stringify(obj), { status, headers:{'content-type':'application/json'}}); }
