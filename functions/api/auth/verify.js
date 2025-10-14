@@ -24,8 +24,8 @@ export async function onRequestGet({ request, env }) {
   };
   await env.USERS_KV.put(userKey, JSON.stringify(user));
 
-  // Issue session cookie
-  const jwt = makeJWT(env.JWT_SECRET, { uid, email }, 60*60*24*30); // 30 days
+  // Issue session cookie (JWT)
+  const jwt = await makeJWT(env.JWT_SECRET, { uid, email }, 60*60*24*30); // 30 days
 
   const dest = (env.SUCCESS_URL || 'https://takehomecompare.com/advanced-v2.html');
   return new Response('', {
@@ -37,20 +37,10 @@ export async function onRequestGet({ request, env }) {
   });
 }
 
-function text(s, status=200) {
-  return new Response(s, { status, headers: { 'content-type': 'text/plain' }});
-}
-function hash(s) {
-  const data = new TextEncoder().encode(s);
-  // Simple non-crypto hash for stable uid
-  let h = 2166136261;
-  for (let b of data){ h ^= b; h += (h<<1) + (h<<4) + (h<<7) + (h<<8) + (h<<24); h >>>= 0; }
-  return h.toString(16);
-}
-function base64url(a) {
-  return btoa(String.fromCharCode(...a)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
-}
-function makeJWT(secret, payload, maxAgeSec) {
+function text(s, status=200) { return new Response(s, { status, headers: { 'content-type': 'text/plain' }}); }
+function hash(s){ const data=new TextEncoder().encode(s); let h=2166136261; for (let b of data){ h^=b; h+=(h<<1)+(h<<4)+(h<<7)+(h<<8)+(h<<24); h>>>=0; } return h.toString(16); }
+function base64url(a){ return btoa(String.fromCharCode(...a)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
+async function makeJWT(secret, payload, maxAgeSec){
   const enc = new TextEncoder();
   const now = Math.floor(Date.now()/1000);
   const header = { alg: 'HS256', typ: 'JWT' };
@@ -59,7 +49,7 @@ function makeJWT(secret, payload, maxAgeSec) {
   const p = base64url(enc.encode(JSON.stringify(body)));
   const toSign = new TextEncoder().encode(`${h}.${p}`);
   const keyData = enc.encode(secret);
-  return crypto.subtle.importKey('raw', keyData, { name:'HMAC', hash:'SHA-256' }, false, ['sign'])
-    .then(key => crypto.subtle.sign('HMAC', key, toSign))
-    .then(sig => `${h}.${p}.${base64url(new Uint8Array(sig))}`);
+  const key = await crypto.subtle.importKey('raw', keyData, { name:'HMAC', hash:'SHA-256' }, false, ['sign']);
+  const sig = await crypto.subtle.sign('HMAC', key, toSign);
+  return `${h}.${p}.${base64url(new Uint8Array(sig))}`;
 }
