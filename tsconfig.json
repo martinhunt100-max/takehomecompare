@@ -7,14 +7,12 @@
     "jsx": "preserve",
     "strict": true,
     "baseUrl": ".",
-    "paths": {
-      "@/*": ["*"]
-    },
+    "paths": { "@/*": ["*"] },
     "allowJs": true,
     "resolveJsonModule": true,
     "noEmit": true,
     "incremental": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["next-env.d.ts", ".next/types/**/*.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]
 }
