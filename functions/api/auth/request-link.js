@@ -13,15 +13,18 @@ export async function onRequestPost({ request, env }) {
     const base = env.PUBLIC_BASE_URL || 'https://takehomecompare.com';
     const link = `${base}/api/auth/verify?token=${encodeURIComponent(token)}`;
 
-    // Send email (Resend)
-    const ok = await sendEmail(env, {
-      to: email,
-      subject: 'Your sign-in link — TakeHomeCompare',
-      html: `<p>Click to sign in:</p><p><a href="${link}">${link}</a></p><p>This link expires in 15 minutes.</p>`
-    });
-
-    if (!ok) return json({ error: 'Email send failed' }, 500);
-    return json({ ok: true });
+    if (env.RESEND_API_KEY) {
+      const ok = await sendEmail(env, {
+        to: email,
+        subject: 'Your sign-in link — TakeHomeCompare',
+        html: `<p>Click to sign in:</p><p><a href="${link}">${link}</a></p><p>This link expires in 15 minutes.</p>`
+      });
+      if (!ok) return json({ error: 'Email send failed' }, 500);
+      return json({ ok: true });
+    } else {
+      // Dev fallback: return the link in JSON so you can click it
+      return json({ ok: true, dev_link: link });
+    }
   } catch (e) {
     return json({ error: 'Request failed' }, 500);
   }
