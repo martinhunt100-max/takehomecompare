@@ -1,4 +1,4 @@
-import { auth } from "next-auth";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { GoProButton } from "@/components/GoProButton";
 
