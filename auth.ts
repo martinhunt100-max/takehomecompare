@@ -1,3 +1,4 @@
+// auth.ts (root of repo)
 import NextAuth from "next-auth";
 import EmailProvider from "next-auth/providers/email";
 import { PrismaAdapter } from "@auth/prisma-adapter";
@@ -33,3 +34,4 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }
   }
 });
+
