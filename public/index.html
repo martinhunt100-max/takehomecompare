@@ -257,9 +257,26 @@
       }
     } catch(e){}
 
-    document.getElementById('calc').addEventListener('click', recalc);
-    document.getElementById('goPro').addEventListener('click', startCheckout);
-  });
+    document.getElementById('goPro').addEventListener('click', async () => {
+  // Ask server who I am and whether I have an active sub
+  const r = await fetch('/api/me', { credentials:'include' });
+  const me = await r.json().catch(()=>({}));
+  if (!me.authenticated) {
+    // Send to login first
+    location.href = '/login.html';
+    return;
+  }
+  if (me.subscription_active) {
+    location.href = '/advanced-v2.html';
+  } else {
+    // Start checkout for logged-in user (will attach Stripe customer)
+    const r2 = await fetch('/api/create-checkout-session', { method:'POST', credentials:'include' });
+    const j = await r2.json().catch(()=>({}));
+    if (j.url) location.href = j.url;
+    else alert('Checkout error: ' + (j.error || 'Unknown'));
+  }
+});
+
   </script>
 </body>
 </html>
