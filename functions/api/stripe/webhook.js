@@ -70,6 +70,9 @@ async function upsertUserByEmail(env, email, patch){
   const cur = await env.USERS_KV.get(key, 'json') || { id:uid, email };
   const next = { ...cur, ...patch, updated: Date.now() };
   await env.USERS_KV.put(key, JSON.stringify(next));
+  // after put:
+if (next.stripe_customer_id) {
+  await env.USERS_KV.put(`customer:${next.stripe_customer_id}`, next.id);
 }
 async function updateUserByCustomer(env, customerId, patch){
   // KV has no secondary index, so we store a reverse index too
