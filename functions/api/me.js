@@ -12,9 +12,7 @@ export async function onRequestGet({ request, env }) {
   return json({ authenticated:true, subscription_active: active, email: user?.email || null });
 }
 
-function json(obj, status=200){
-  return new Response(JSON.stringify(obj), { status, headers:{'content-type':'application/json'}});
-}
+function json(obj, status=200){ return new Response(JSON.stringify(obj), { status, headers:{'content-type':'application/json'}}); }
 
 async function verifyJWT(secret, token){
   const [h,p,s] = token.split('.');
@@ -26,9 +24,4 @@ async function verifyJWT(secret, token){
   if (body.exp && Math.floor(Date.now()/1000) > body.exp) return null;
   return body;
 }
-function b64uToBytes(b){
-  b = b.replace(/-/g,'+').replace(/_/g,'/'); while(b.length%4) b+='=';
-  const bin = atob(b); const out = new Uint8Array(bin.length);
-  for(let i=0;i<bin.length;i++) out[i]=bin.charCodeAt(i);
-  return out;
-}
+function b64uToBytes(b){ b=b.replace(/-/g,'+').replace(/_/g,'/'); while(b.length%4)b+='='; const bin=atob(b); const out=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) out[i]=bin.charCodeAt(i); return out; }
