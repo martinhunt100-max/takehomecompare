@@ -1,5 +1,5 @@
 // auth.ts (root of repo)
-import NextAuth from "next-auth";                          // <-- this line changed
+import NextAuth from "next-auth";                          // <-- IMPORTANT: from "next-auth"
 import EmailProvider from "next-auth/providers/email";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
