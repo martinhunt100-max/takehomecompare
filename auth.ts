@@ -1,3 +1,4 @@
+// auth.ts (root)
 import NextAuth from "next-auth";
 import EmailProvider from "next-auth/providers/email";
 import { PrismaAdapter } from "@auth/prisma-adapter";
@@ -8,7 +9,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: "jwt" },
   providers: [
     EmailProvider({
-      from: process.env.EMAIL_FROM,                      // ✅ REQUIRED
+      from: process.env.EMAIL_FROM, // ✅ REQUIRED so NextAuth doesn't try to use Nodemailer SMTP
       async sendVerificationRequest({ identifier, url }) {
         await fetch("https://api.resend.com/emails", {
           method: "POST",
@@ -17,7 +18,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            from: process.env.EMAIL_FROM,                // must match a verified sender
+            from: process.env.EMAIL_FROM,  // must be a verified sender/domain in Resend
             to: [identifier],
             subject: "Your sign-in link",
             html: `<p>Click to sign in:</p><p><a href="${url}">${url}</a></p>`
@@ -34,3 +35,4 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }
   }
 });
+
