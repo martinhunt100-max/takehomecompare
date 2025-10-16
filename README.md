@@ -12,3 +12,6 @@
 - `customer.subscription.deleted`
 6) **Email**: verify sending domain in Resend. Set `RESEND_API_KEY` and `EMAIL_FROM`.
 7) **Deploy**. Test: sign-in → `/advanced` → Checkout → return → `/api/me` shows `subscription_active: true`.
+
+  Trigger redeploy
+
