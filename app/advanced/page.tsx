@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { auth } from "@/auth";            // ❗ change from 'next-auth'
 import { prisma } from "@/lib/prisma";
 import { GoProButton } from "@/components/GoProButton";
