@@ -1,7 +1,7 @@
 // pages/api/checkout.ts
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getServerSession } from "next-auth";
-import { auth as authConfig } from "@/auth"; // reuse your NextAuth config
+import getServerSession from "next-auth";          // ✅ default import in v5
+import { authConfig } from "@/auth";               // ✅ use exported config
 import { stripe } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
 
