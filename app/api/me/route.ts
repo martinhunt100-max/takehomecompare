@@ -1,6 +1,7 @@
-// app/api/me/route.ts
-export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const prerender = false;
 
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
