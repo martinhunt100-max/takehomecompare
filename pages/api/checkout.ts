@@ -1,21 +1,22 @@
 // pages/api/checkout.ts
 import type { NextApiRequest, NextApiResponse } from "next";
-import getServerSession from "next-auth";        // ✅ default import, v5
-import { authConfig } from "@/auth";             // ✅ we exported this earlier
+import { getToken } from "next-auth/jwt";      // ✅ works in Pages API with req cookies
 import { stripe } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
-  // ✅ v5 signature: just pass the config (no req/res params)
-  const session = await getServerSession(authConfig);
+  // Read the JWT from cookies; requires NEXTAUTH_SECRET to be set
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  const email = token?.email as string | undefined;
 
-  if (!session?.user?.email) {
+  if (!email) {
     return res.status(401).json({ error: "Not authenticated" });
   }
 
-  const user = await prisma.user.findUnique({ where: { email: session.user.email } });
+  // Look up the user in your DB
+  const user = await prisma.user.findUnique({ where: { email } });
   if (!user) return res.status(404).json({ error: "User not found" });
 
   const priceId = process.env.STRIPE_PRICE_BASIC;
@@ -25,7 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     mode: "subscription",
     success_url: `${process.env.NEXTAUTH_URL}/advanced?status=success`,
     cancel_url: `${process.env.NEXTAUTH_URL}/advanced?status=cancelled`,
-    customer_email: session.user.email!,
+    customer_email: email,
     line_items: [{ price: priceId, quantity: 1 }],
     metadata: { userId: user.id },
   });
