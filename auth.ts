@@ -1,5 +1,4 @@
-// auth.ts (root of repo)
-import NextAuth from "next-auth";               // <-- NOTE: from "next-auth"
+import NextAuth from "next-auth";
 import EmailProvider from "next-auth/providers/email";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
@@ -9,7 +8,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: "jwt" },
   providers: [
     EmailProvider({
-      sendVerificationRequest: async ({ identifier, url }) => {
+      from: process.env.EMAIL_FROM,                      // ✅ REQUIRED
+      async sendVerificationRequest({ identifier, url }) {
         await fetch("https://api.resend.com/emails", {
           method: "POST",
           headers: {
@@ -17,7 +17,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            from: process.env.EMAIL_FROM,
+            from: process.env.EMAIL_FROM,                // must match a verified sender
             to: [identifier],
             subject: "Your sign-in link",
             html: `<p>Click to sign in:</p><p><a href="${url}">${url}</a></p>`
