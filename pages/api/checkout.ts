@@ -1,15 +1,19 @@
 // pages/api/checkout.ts
 import type { NextApiRequest, NextApiResponse } from "next";
-import getServerSession from "next-auth";          // ✅ default import in v5
-import { authConfig } from "@/auth";               // ✅ use exported config
+import getServerSession from "next-auth";        // ✅ default import, v5
+import { authConfig } from "@/auth";             // ✅ we exported this earlier
 import { stripe } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
-  const session = await getServerSession(req, res, authConfig as any);
-  if (!session?.user?.email) return res.status(401).json({ error: "Not authenticated" });
+  // ✅ v5 signature: just pass the config (no req/res params)
+  const session = await getServerSession(authConfig);
+
+  if (!session?.user?.email) {
+    return res.status(401).json({ error: "Not authenticated" });
+  }
 
   const user = await prisma.user.findUnique({ where: { email: session.user.email } });
   if (!user) return res.status(404).json({ error: "User not found" });
