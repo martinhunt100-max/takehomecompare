@@ -1,17 +1,21 @@
+// app/api/me/route.ts
 export const dynamic = "force-dynamic";
-import { auth } from "@/auth";            
-import { prisma } from "@/lib/prisma";
+
 import { NextResponse } from "next/server";
+import { auth } from "@/auth";
+import { prisma } from "@/lib/prisma";
 
 export async function GET() {
   const session = await auth();
   if (!session?.user?.email) {
     return NextResponse.json({ authenticated: false, subscription_active: false });
   }
+
   const user = await prisma.user.findUnique({
     where: { email: session.user.email },
-    include: { Subscription: true }
+    include: { Subscription: true },
   });
+
   const isPaid =
     !!user?.Subscription &&
     (user.Subscription.status === "active" || user.Subscription.status === "trialing");
@@ -19,6 +23,6 @@ export async function GET() {
   return NextResponse.json({
     authenticated: true,
     subscription_active: isPaid,
-    email: user?.email ?? null
+    email: user?.email ?? null,
   });
 }
