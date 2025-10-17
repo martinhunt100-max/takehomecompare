@@ -2,42 +2,27 @@
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 export const runtime = "nodejs";
+export const fetchCache = "force-no-store"; // belt-and-braces to stop caching
 
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
-import { GoProButton } from "@/components/GoProButton";
+import { redirect } from "next/navigation";
 
-export default async function Advanced() {
+export default async function AdvancedPage() {
+  // ✅ Only call auth() at request time, not at module top-level
   const session = await auth();
 
   if (!session?.user?.email) {
-    return (
-      <main className="p-6 max-w-3xl mx-auto">
-        <p>Please <a className="underline" href="/signin">sign in</a>.</p>
-      </main>
-    );
+    // Not logged in — send to your sign-in page
+    redirect("/signin");
   }
 
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-    include: { Subscription: true },
-  });
-
-  const isPaid =
-    !!user?.Subscription &&
-    (user.Subscription.status === "active" || user.Subscription.status === "trialing");
-
+  // TODO: render your paid/advanced UI here
   return (
-    <main className="p-6 max-w-3xl mx-auto">
-      <h1 className="text-xl font-semibold mb-4">Advanced Calculator</h1>
-      {isPaid ? (
-        <div className="border rounded p-4">/* TODO: advanced UI */</div>
-      ) : (
-        <div className="space-y-4">
-          <p>Upgrade to unlock advanced comparisons.</p>
-          <GoProButton />
-        </div>
-      )}
+    <main className="mx-auto max-w-3xl p-6">
+      <h1 className="text-2xl font-semibold">Advanced</h1>
+      <p className="mt-2 text-sm text-gray-600">
+        Welcome back, {session.user.email}
+      </p>
     </main>
   );
 }
