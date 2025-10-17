@@ -1,30 +1,39 @@
+// app/(auth)/signin/page.tsx
 "use client";
 
-import { useState } from "react";
 import { signIn } from "next-auth/react";
+import { useState } from "react";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
 
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    await signIn("email", { email, callbackUrl: "/advanced" });
-  }
-
   return (
-    <main className="p-6 max-w-md mx-auto">
-      <h1 className="text-xl font-semibold mb-4">Sign in</h1>
-      <form onSubmit={onSubmit} className="space-y-3">
+    <main className="mx-auto max-w-md p-6">
+      <h1 className="text-xl font-bold">Sign in</h1>
+      <p className="mt-2 text-sm text-gray-600">
+        Enter your email to receive a magic link.
+      </p>
+
+      <form
+        onSubmit={async (e) => {
+          e.preventDefault();
+          await signIn("email", {
+            email,
+            callbackUrl: "/advanced",
+          });
+        }}
+        className="mt-4 space-y-3"
+      >
         <input
-          type="email"
-          required
+          className="w-full rounded border p-2"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          type="email"
           placeholder="you@example.com"
-          className="w-full border rounded px-3 py-2"
+          required
         />
-        <button type="submit" className="px-4 py-2 rounded bg-black text-white">
-          Send magic link
+        <button className="rounded bg-black px-4 py-2 text-white" type="submit">
+          Email me a sign-in link
         </button>
       </form>
     </main>
