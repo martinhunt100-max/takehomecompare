@@ -1,47 +1,54 @@
-// auth.ts (root of repo)
+// auth.ts (repo root)
 import NextAuth from "next-auth";
 import EmailProvider from "next-auth/providers/email";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 
-function requireEnv(name: string): string {
-  const v = process.env[name];
-  if (!v) console.warn(`[auth] Missing environment variable: ${name}`);
-  return v || "";
-}
+export const runtime = "nodejs"; // avoid edge for auth
 
-// ✅ Export the config object so Pages API routes can use it
 export const authConfig = {
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
-  trustHost: true,
+
   providers: [
     EmailProvider({
-      from: requireEnv("EMAIL_FROM"), // must be a verified sender/domain in Resend
-      async sendVerificationRequest({ identifier, url }) {
-        const RESEND_API_KEY = requireEnv("RESEND_API_KEY");
-        const FROM = requireEnv("EMAIL_FROM");
+      // ✅ REQUIRED by Auth.js at init time
+      server: {
+        host: process.env.SMTP_HOST,      // e.g. smtp.resend.com
+        port: Number(process.env.SMTP_PORT || 465),
+        auth: {
+          user: process.env.SMTP_USER,    // e.g. "resend"
+          pass: process.env.SMTP_PASSWORD // from Resend SMTP Integration
+        },
+        secure: true
+      },
+      // Used as the visible From header and by Resend
+      from: process.env.EMAIL_FROM, // e.g. "team@takehomecompare.com"
 
-        const html = `
-          <div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;line-height:1.5">
-            <h2>Sign in to TakeHomeCompare</h2>
-            <p>Click to sign in:</p>
-            <p><a href="${url}" style="display:inline-block;padding:10px 16px;border-radius:6px;background:#000;color:#fff;text-decoration:none">Sign in</a></p>
-            <p>If the button doesn't work, copy and paste this URL:</p>
-            <p><a href="${url}">${url}</a></p>
-          </div>`;
+      // Optional: send via Resend HTTP API (kept here if you prefer it)
+      async sendVerificationRequest({ identifier, url }) {
+        // If RESEND_API_KEY is not set, fall back to nodemailer SMTP above.
+        if (!process.env.RESEND_API_KEY) return;
 
         const resp = await fetch("https://api.resend.com/emails", {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${RESEND_API_KEY}`,
+            Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            from: FROM,
+            from: process.env.EMAIL_FROM,
             to: [identifier],
             subject: "Your sign-in link",
-            html,
+            html: `
+              <div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;line-height:1.5">
+                <h2>Sign in to TakeHomeCompare</h2>
+                <p>Click the button below to sign in:</p>
+                <p><a href="${url}" style="display:inline-block;padding:10px 16px;border-radius:6px;background:#000;color:#fff;text-decoration:none">Sign in</a></p>
+                <p>If the button doesn't work, copy and paste this URL:</p>
+                <p><a href="${url}">${url}</a></p>
+              </div>
+            `,
           }),
         });
 
@@ -52,7 +59,9 @@ export const authConfig = {
       },
     }),
   ],
+
   pages: { signIn: "/signin" },
+
   callbacks: {
     async session({ session, token }) {
       if (token?.sub) (session as any).userId = token.sub;
@@ -61,5 +70,4 @@ export const authConfig = {
   },
 } satisfies Parameters<typeof NextAuth>[0];
 
-// Standard v5 helpers for App Router usage
 export const { handlers, auth, signIn, signOut } = NextAuth(authConfig);
