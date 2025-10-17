@@ -1,61 +1,33 @@
 // lib/auth.ts
 import NextAuth, { type NextAuthConfig } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import EmailProvider from "next-auth/providers/email";
+import Resend from "next-auth/providers/resend"; // ✅ use Resend provider (no Nodemailer)
 import { prisma } from "@/lib/prisma";
 
 export const authConfig = {
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
 
-  // Important: include `from` so NextAuth never tries to use Nodemailer
   providers: [
-    EmailProvider({
-      from: process.env.EMAIL_FROM, // e.g. "TakeHomeCompare <login@yourdomain.com>"
-      async sendVerificationRequest({ identifier, url }) {
-        // Use Resend directly (no SMTP/Nodemailer)
-        const resp = await fetch("https://api.resend.com/emails", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            from: process.env.EMAIL_FROM,
-            to: [identifier],
-            subject: "Your sign-in link",
-            html: `
-              <div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;line-height:1.5">
-                <h2>Sign in to TakeHomeCompare</h2>
-                <p>Click the button below to sign in:</p>
-                <p><a href="${url}" style="display:inline-block;padding:10px 16px;border-radius:6px;background:#000;color:#fff;text-decoration:none">Sign in</a></p>
-                <p>If the button doesn't work, copy and paste this URL:</p>
-                <p><a href="${url}">${url}</a></p>
-              </div>
-            `,
-          }),
-        });
-
-        if (!resp.ok) {
-          const text = await resp.text();
-          throw new Error(`Resend API error: ${resp.status} ${text}`);
-        }
-      },
+    Resend({
+      apiKey: process.env.RESEND_API_KEY!,   // e.g. re_XYZ...
+      from: process.env.EMAIL_FROM!,         // e.g. "TakeHomeCompare <login@takehomecompare.com>"
     }),
   ],
 
-  pages: { signIn: "/signin" },
+  pages: {
+    signIn: "/signin",
+  },
 
   callbacks: {
     async session({ session, token }) {
+      // expose userId on session
       if (token?.sub) (session as any).userId = token.sub;
       return session;
     },
   },
 
-  // Helps in multi-domain / Vercel previews
-  trustHost: true,
+  // trustHost: true, // uncomment if you use multiple domains
 } satisfies NextAuthConfig;
 
-// Bind NextAuth and export helpers for App Router usage
 export const { handlers, auth, signIn, signOut } = NextAuth(authConfig);
