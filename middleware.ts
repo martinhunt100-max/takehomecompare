@@ -1,11 +1,12 @@
-import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
 export function middleware(_req: NextRequest) {
+  // No auth logic here; we only scope where middleware runs.
   return NextResponse.next();
 }
 
-// Only run on premium endpoints, not public pages
 export const config = {
+  // Only run on premium paths — the page itself handles auth+sub checks
   matcher: ["/advanced/:path*"],
 };
