@@ -18,6 +18,7 @@ export default function SignIn() {
           e.preventDefault();
           await signIn("email", {
             email,
+            // after sign-in, send them to Advanced by default
             callbackUrl: "/advanced",
           });
         }}
