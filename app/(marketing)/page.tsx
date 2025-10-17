@@ -6,7 +6,7 @@ export default function Home() {
       <h1 className="text-2xl font-bold">TakeHomeCompare</h1>
       <p className="mt-2">Free basic calculator.</p>
 
-      {/* Add your free/basic calculator UI here */}
+      {/* TODO: your free/basic calculator UI here */}
 
       <div className="mt-6">
         <Link
