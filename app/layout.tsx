@@ -13,7 +13,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <head>
-        {/* Load your marketing styles from /public/styles */}
+        {/* Load your marketing styles from /styles */}
         <link rel="stylesheet" href="/styles/global.css" />
         {/* If your CSS file has a different name/path, update the href above */}
       </head>
