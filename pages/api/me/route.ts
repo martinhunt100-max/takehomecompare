@@ -1,28 +1,10 @@
-export const revalidate = 0;
-export const prerender = false;
+// pages/api/me.ts
+import type { NextApiRequest, NextApiResponse } from "next";
+import { auth } from "@/auth"; // v5 helper; no prerender for pages/api
 
-import { NextResponse } from "next/server";
-import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
-
-export async function GET() {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const session = await auth();
-  if (!session?.user?.email) {
-    return NextResponse.json({ authenticated: false, subscription_active: false });
-  }
-
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-    include: { Subscription: true },
-  });
-
-  const isPaid =
-    !!user?.Subscription &&
-    (user.Subscription.status === "active" || user.Subscription.status === "trialing");
-
-  return NextResponse.json({
-    authenticated: true,
-    subscription_active: isPaid,
-    email: user?.email ?? null,
-  });
+  if (!session?.user?.email) return res.status(401).json({ ok: false });
+  return res.status(200).json({ ok: true, email: session.user.email });
 }
+
