@@ -1,16 +1,13 @@
 // pages/api/checkout.ts
 import type { NextApiRequest, NextApiResponse } from "next";
-import getServerSession from "next-auth";        // ✅ default import, v5
-import { authConfig } from "@/auth";             // ✅ we exported this earlier
+import { auth } from "@/auth";                 // ✅ use v5 helper instead of getServerSession
 import { stripe } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
-  // ✅ v5 signature: just pass the config (no req/res params)
-  const session = await getServerSession(authConfig);
-
+  const session = await auth();                // ✅ returns { user: ... } | null
   if (!session?.user?.email) {
     return res.status(401).json({ error: "Not authenticated" });
   }
@@ -32,4 +29,3 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   return res.status(200).json({ url: checkout.url });
 }
-
