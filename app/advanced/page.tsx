@@ -1,20 +1,34 @@
 // app/advanced/page.tsx
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
-export const runtime = "nodejs";
 
-import ClientGate from "./ClientGate";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
+import { isSubscribed } from "@/lib/subscription";
 
 export default async function AdvancedPage() {
-  // ❌ Do NOT import or call `auth()` here.
-  // Build will only render this shell; auth happens client-side via /api/me.
+  const session = await auth();
+
+  // Not signed in → go sign in first
+  if (!session?.user?.id) {
+    redirect("/signin?next=/advanced");
+  }
+
+  // Signed in but not subscribed → go to subscribe page
+  const ok = await isSubscribed(session.user.id as string);
+  if (!ok) {
+    redirect("/pro?next=/advanced");
+  }
+
+  // ✅ Subscribed → show advanced tools
   return (
-    <ClientGate>
-      <main className="mx-auto max-w-3xl p-6">
-        <h1 className="text-2xl font-semibold">Advanced</h1>
-        <p className="mt-2 text-sm text-gray-600">Welcome to the advanced area.</p>
-        {/* ...your real advanced content goes here... */}
-      </main>
-    </ClientGate>
+    <main className="mx-auto max-w-3xl p-6">
+      <h1 className="text-2xl font-semibold">Advanced Calculations</h1>
+      {/* mount your advanced calculator component(s) here */}
+      {/* <AdvancedCalculator /> */}
+      <p className="mt-2 text-gray-700">
+        Welcome! Your subscription unlocks these advanced tools.
+      </p>
+    </main>
   );
 }
