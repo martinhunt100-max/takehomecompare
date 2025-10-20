@@ -1,124 +1,95 @@
-// app/(marketing)/page.tsx
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 import Link from "next/link";
 
 export default function MarketingHome() {
   return (
-    <main>
-      {/* Simple top bar with logo and premium CTA */}
-      <header className="thc-header">
-        <div className="thc-header__inner">
-          <Link href="/" className="thc-logo">
-            {/* If you have a logo in /public/assets/logo.svg it will render */}
-            <img src="/assets/logo.svg" alt="Take Home Compare" />
-          </Link>
-
-          <nav className="thc-nav">
-            <Link href="/pro" className="thc-btn thc-btn--primary">
-              Advanced Calculator →
-            </Link>
-          </nav>
+    <>
+      <header>
+        <div className="header-inner wrap">
+          <div />
+          <img
+            src="/assets/logo.svg"
+            alt="Take Home Compare"
+            className="logo"
+          />
+          <div className="cta">
+            <Link href="/advanced" className="btn">Advanced Calculator →</Link>
+          </div>
         </div>
       </header>
 
-      {/* Tagline / hero */}
-      <section className="thc-hero">
-        <h1>
-          Compare your expected <strong>take-home pay</strong> across states and countries in seconds.
-        </h1>
-      </section>
+      <main className="wrap">
+        <h2>Compare your expected <strong>take-home pay</strong> across states and countries in seconds.</h2>
 
-      {/* FREE BASIC CALCULATOR */}
-      <section className="thc-card thc-grid">
-        {/* Location A */}
-        <div className="thc-col">
-          <h2>Location A</h2>
+        <div className="card">
+          <div className="grid-2">
+            <section>
+              <h3>Location A</h3>
+              <label>Country / US state</label>
+              <select defaultValue="">
+                <option value="" disabled>Select…</option>
+              </select>
 
-          <label>Country / US state</label>
-          <select defaultValue="">
-            <option value="" disabled>
-              Select…
-            </option>
-            <option>US — California</option>
-            <option>US — New York</option>
-            <option>UK</option>
-            <option>Canada — Ontario</option>
-          </select>
+              <label>Gross annual salary</label>
+              <input defaultValue="90000" />
 
-          <label>Gross annual salary</label>
-          <input type="number" defaultValue={90000} />
+              <label>Filing / Plan</label>
+              <select defaultValue="US: Single">
+                <option>US: Single</option>
+              </select>
 
-          <label>Filing / Plan</label>
-          <select defaultValue="US: Single">
-            <option>US: Single</option>
-            <option>US: Married Filing Jointly</option>
-            <option>UK: PAYE</option>
-            <option>CA: Basic</option>
-          </select>
+              <label>Pre-tax pension (%)</label>
+              <input defaultValue="5" />
+              <div className="kpis">
+                <span className="chip">Net monthly: —</span>
+                <span className="chip">Eff. tax: —</span>
+              </div>
+            </section>
 
-          <label>Pre-tax pension (%)</label>
-          <input type="number" defaultValue={5} />
+            <section>
+              <h3>Location B</h3>
+              <label>Country / US state</label>
+              <select defaultValue="">
+                <option value="" disabled>Select…</option>
+              </select>
 
-          <div className="thc-inline">
-            <span className="thc-chip">Net monthly: —</span>
-            <span className="thc-chip">Eff. tax: —</span>
+              <label>Gross annual salary</label>
+              <input defaultValue="90000" />
+
+              <label>Filing / Plan</label>
+              <select defaultValue="US: Single">
+                <option>US: Single</option>
+              </select>
+
+              <label>Pre-tax pension (%)</label>
+              <input defaultValue="5" />
+              <div className="kpis">
+                <span className="chip">Net monthly: —</span>
+                <span className="chip">Eff. tax: —</span>
+              </div>
+            </section>
           </div>
-        </div>
 
-        {/* Location B */}
-        <div className="thc-col">
-          <h2>Location B</h2>
+          <button className="btn" style={{ marginTop: 12 }}>Calculate & Compare</button>
 
-          <label>Country / US state</label>
-          <select defaultValue="">
-            <option value="" disabled>
-              Select…
-            </option>
-            <option>US — Texas</option>
-            <option>US — Florida</option>
-            <option>Germany</option>
-            <option>Australia — NSW</option>
-          </select>
-
-          <label>Gross annual salary</label>
-          <input type="number" defaultValue={90000} />
-
-          <label>Filing / Plan</label>
-          <select defaultValue="US: Single">
-            <option>US: Single</option>
-            <option>US: Married Filing Jointly</option>
-            <option>UK: PAYE</option>
-            <option>CA: Basic</option>
-          </select>
-
-          <label>Pre-tax pension (%)</label>
-          <input type="number" defaultValue={5} />
-
-          <div className="thc-inline">
-            <span className="thc-chip">Net monthly: —</span>
-            <span className="thc-chip">Eff. tax: —</span>
-          </div>
-        </div>
-
-        <div className="thc-col thc-actions">
-          <button className="thc-btn thc-btn--primary">Calculate & Compare</button>
-
-          <div className="thc-links">
-            <Link href="/pro">Advanced (Subscribers)</Link>
+          <div style={{ marginTop: 12 }}>
+            <Link href="/advanced">Advanced (Subscribers)</Link>{" · "}
             <Link href="/subscribe">Subscribe</Link>
           </div>
         </div>
-      </section>
 
-      <footer className="thc-footer">
-        <p>
-          © {new Date().getFullYear()} TakeHomeCompare.com · v? · —
+        <p className="small">
+          The calculations and data presented are the most up-to-date available to this site, provided strictly as
+          guidance and not financial advice. Do not rely on these figures for significant financial decisions without
+          independent verification.
         </p>
-        <p className="thc-disclaimer">
-          The calculations and data presented are the most up-to-date available to this site,
-          provided strictly as guidance and not financial advice. Do not rely on these figures for
-          significant financial decisions without independent verification.
-        </p>
+      </main>
+
+      <footer>
+        © {new Date().getFullYear()} TakeHomeCompare.com · v? · —
       </footer>
-    </main>
+    </>
   );
 }
