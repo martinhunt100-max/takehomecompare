@@ -10,7 +10,7 @@ export default function MarketingHome() {
         <div className="header-inner wrap">
           <div />
           <img
-            src="/assets/logo.svg"
+            src="/assets/logo.png"
             alt="Take Home Compare"
             className="logo"
           />
